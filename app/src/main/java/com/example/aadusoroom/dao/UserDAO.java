@@ -4,6 +4,7 @@ import com.example.aadusoroom.entity.User;
 
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -12,6 +13,8 @@ import androidx.room.Update;
 
 @Dao
 public interface UserDAO {
+    // Todas estas operaciones se tienen que hacer en una ebra excepto las que devuelven liveData
+
     @Delete
     int delete(User usuario); //devuelve nº filas borrado
 
@@ -27,4 +30,6 @@ public interface UserDAO {
     @Query("SELECT * FROM user ORDER BY apellidos, nombre, id DESC")
     List<User> getAll();
 
+    @Query("SELECT * FROM user ORDER BY apellidos, nombre, id DESC") // LiveData es una lista que se gestiona sola y en segundo plano.
+    LiveData<List<User>> getAllLive();
 }

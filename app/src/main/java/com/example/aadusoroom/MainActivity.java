@@ -4,12 +4,16 @@ import android.os.Bundle;
 
 import com.example.aadusoroom.entity.User;
 import com.example.aadusoroom.model.Repository;
+import com.example.aadusoroom.view.MainViewModel;
 import com.example.aadusoroom.view.UserAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +25,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Variable
+    private MainViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,16 +38,27 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                User user = new User();
+                user.setApellidos("Franco");
+                user.setNombre("Francisco");
+                viewModel.insert(user);
             }
         });
 
         RecyclerView rvList = findViewById(R.id.rvList);
         rvList.setLayoutManager(new LinearLayoutManager(this));
-        UserAdapter adapter = new UserAdapter(this);
+        final UserAdapter adapter = new UserAdapter(this); // Se hace final porque es una clase anonima
         rvList.setAdapter(adapter);
 
+        // viewModel = new ViewModelProvider(this).get(MainViewModel.class); Asin NO
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class); // Asin SI
+
+        viewModel.getUsers().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                adapter.setUser(users);
+            }
+        });
     }
 
     @Override
